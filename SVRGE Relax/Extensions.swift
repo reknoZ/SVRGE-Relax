@@ -7,6 +7,18 @@
 
 import Foundation
 
+extension Bundle {
+	var releaseVersionNumber: String? {
+		return infoDictionary?["CFBundleShortVersionString"] as? String
+	}
+	var cleanReleaseVersion: String {
+		return releaseVersionNumber ?? "n/a"
+	}
+	var buildVersionNumber: String? {
+		return infoDictionary?["CFBundleVersion"] as? String
+	}
+}
+
 extension Date {
 	init(from dateString: String, formattedAs format: String = "yyyyMMddThhmmss") {
 		let formatter = DateFormatter()

@@ -21,80 +21,74 @@ struct StandingsView: View {
 	@Binding var global: GlobalVariables
 	
 	var body: some View {
-		VStack {
-			FilterView(global: $global)
-
-			if (filteredMatches(for: global).filter { $0.matchComplete()} .count > 0) {
-				List {
-					Group {
-						HStack {
-							Text ("#")
-								.frame(width: 20)
-							Text ("Team")
-							Spacer ()
-							Group {
-								Text ("GP")
-								Text ("Pts")
-								Text ("W")
-								Text ("L")
+		NavigationView {
+			VStack {
+				FilterView(global: $global, matchesCount: completedMatches(for: global).count)
+				
+				if (completedMatches(for: global).count > 0) {
+					List {
+						Group {
+							HStack {
+								Text ("#")
+									.frame(width: 20)
+								Text ("Team")
+								Spacer ()
+								Group {
+									Text ("GP")
+									Text ("Pts")
+									Text ("W")
+									Text ("L")
+								}
 							}
 						}
-					}
-					.fontWeight(.bold)
-					
-					ForEach(selectedStats().enumerated().map {$0}, id: \.element.name) { i, stats in
-						HStack {
-							Text ("\(i+1)").alignmentGuide(.gp) { d in d[HorizontalAlignment.trailing] }
+						.fontWeight(.bold)
+						
+						ForEach(selectedStandings().enumerated().map {$0}, id: \.element.name) { i, standings in
+							HStack {
+								Text ("\(i+1)").alignmentGuide(.gp) { d in d[HorizontalAlignment.trailing] }
+									.frame(width: 20)
+								Text (standings.name)
+								Spacer()
+								Group {
+									Text ("\(standings.totalMatches)")
+									Text ("\(standings.standingsPoints)")
+									Text ("\(standings.matchesWon)")
+									Text ("\(standings.matchesLost)")
+								}
+								.alignmentGuide(.gp) { d in d[HorizontalAlignment.trailing] }
+								.font(.caption)
 								.frame(width: 20)
-							Text (stats.name)
-							Spacer()
-							Group {
-								Text ("\(stats.totalMatches)")
-								Text ("\(stats.standingsPoints)")
-								Text ("\(stats.matchesWon)")
-								Text ("\(stats.matchesLost)")
 							}
-							.alignmentGuide(.gp) { d in d[HorizontalAlignment.trailing] }
-							.font(.caption)
-							.frame(width: 20)
 						}
-						//						HStack {
-						//							Text (stats.matchesWon)
-						//							Text (stats.normalWins)
-						//							Text (stats.matchesWonInTieBreak)
-						//							Text (stats.matchesLost)
-						//							Text (stats.normalWins)
-						//							Text (stats.matchesWonInTieBreak)
-						//						}
+						.listStyle(.plain)
 					}
-					.listStyle(.plain)
+				} else {
+					Spacer()
+					Text ("Data unavailable")
+					Spacer()
 				}
-			} else {
-				Spacer()
-				Text ("Data unavailable")
-				Spacer()
 			}
+			.onAppear { global.foobar() }
 		}
-		.onAppear { global.foobar() }
 	}
 	
-	func selectedStats() -> [Stats] {
-		let stats = standings(for: global)
+	func selectedStandings() -> [Standings] {
+		let standings = standings(for: global)
 		
-		var mergedStats = [String: Stats]()
+		var mergedStandings = [String: Standings]()
 		
-		for stat in stats {
-			if let mergedStat = mergedStats[stat.name] {
-				// If the name is already in the dictionary, merge the stats
-				mergedStats[stat.name] = mergedStat + stat
+		for standing in standings {
+			if let mergedStanding = mergedStandings[standing.name.lowercased()] {
+				// If the name is already in the dictionary, merge the standings
+				mergedStandings[standing.name.lowercased()] = mergedStanding + standing
 			} else {
-				// If the name is not in the dictionary, add the stat to the dictionary
-				mergedStats[stat.name] = stat
+				// If the name is not in the dictionary, add the standing to the dictionary
+				mergedStandings[standing.name.lowercased()] = standing
 			}
 		}
 		
 		// Convert the dictionary back to an array
-		let mergedStatsArray = Array(mergedStats.values)
+		let mergedStatsArray = Array(mergedStandings.values)
 		
 		return mergedStatsArray.sorted(by: { ($0.standingsPoints, $0.matchesWon) > ($1.standingsPoints, $1.matchesWon) } )
 	}

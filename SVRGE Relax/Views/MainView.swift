@@ -16,20 +16,20 @@ struct MainView: View {
 	
     var body: some View {
 		TabView {
-			StandingsView(global: $global)
+			ScheduleView(global: $global)
 				.tabItem {
-					Label ("Standings", systemImage: "person.3")
+					Label ("Schedule", systemImage: "calendar")
 				}
-
+			
 			ScoresView(global: $global)
 				.tabItem {
 					Label ("Scores", systemImage: "exclamationmark.circle")
 				}
-			
-			ScheduleView(global: $global)
+
+			StandingsView(global: $global)
 				.tabItem {
-					Label ("Schedule", systemImage: "calendar")
-				}			
+					Label ("Standings", systemImage: "person.3")
+				}
 		}
 		.task {
 			await fetchSchedule()
@@ -38,12 +38,11 @@ struct MainView: View {
     }
 	
 	func fetchSchedule() async {
-		let url = URL(string: relaxScheduleURLString)
-		guard let requestURL = url else { fatalError("Incorrect URL") }
-		
+		guard let requestURL = URL(string: relaxScheduleURLString) else { fatalError("Incorrect URL") }
+		var request = URLRequest(url: requestURL)
+		request.httpMethod = "POST"
+
 		for division in Divisions.allCases {
-			var request = URLRequest(url: requestURL)
-			request.httpMethod = "POST"
 			request.httpBody = "vlili=\(division.id)".data(using: String.Encoding.utf8)
 			
 			let task = URLSession.shared.dataTask(with: request) { (data, response, error) in

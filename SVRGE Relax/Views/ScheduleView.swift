@@ -13,15 +13,13 @@ struct ScheduleView: View {
 	var body: some View {
 		NavigationView {
 			VStack {
-				FilterView(global: $global)
+				FilterView(global: $global, matchesCount: filteredMatches(for: global).count)
 
-				Text ("\(filteredMatches(for: global).count) matches")
-				
 				List(filteredMatches(for: global)) { scheduledMatch in
 					ScheduleRow(match: scheduledMatch)
 				}
+				.listStyle(.plain)
 			}
-			.navigationTitle ("Schedule")
 		}
     }
 }

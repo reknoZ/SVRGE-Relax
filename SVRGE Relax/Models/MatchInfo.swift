@@ -28,9 +28,8 @@ enum Leagues: String, Codable, Identifiable, CaseIterable {
 }
 
 enum Divisions: String, Identifiable, Codable, CaseIterable {
-
 	// relax
-	case fa, fb, fc // how do I
+	case fa, fb, fc
 	case ha, hb, hc, hd
 	case xa, xb, xc, xd
 	
@@ -47,6 +46,10 @@ func filteredMatches(for global: GlobalVariables) -> [MatchInfo] {
 		.filter { $0.category == global.category }
 		.filter { $0.division == global.division }
 		.sorted()
+}
+
+func completedMatches(for global: GlobalVariables) -> [MatchInfo] {
+	return filteredMatches(for: global).filter { $0.matchComplete() }
 }
 
 struct MatchInfo: Identifiable, Comparable {
@@ -104,10 +107,10 @@ struct MatchInfo: Identifiable, Comparable {
 	}
 }
 
-func standings(for global: GlobalVariables) -> [Stats] {
-	let matches = filteredMatches(for: global)
+func standings(for global: GlobalVariables) -> [Standings] {
+	let matches = completedMatches(for: global)
 	
-	var standings: [Stats] = []
+	var standings: [Standings] = []
 	
 	for match in matches.filter ({ $0.matchSets.count != 0}) {
 		let bestOf = match.bestOf
@@ -122,7 +125,7 @@ func standings(for global: GlobalVariables) -> [Stats] {
 		var pointsWon = match.matchSets.reduce(0) { $0 + $1.homeScore }
 		var pointsLost = match.matchSets.reduce(0) { $0 + $1.awayScore }
 		
-		standings.append(Stats(bestOf: bestOf, name: match.homeTeamName, matchesWon: matchesWon, matchesWonInTieBreak: tieBreakWin, matchesLost: matchesLost, matchesLostInTieBreak: tieBreakLoss, setsWon: match.homeSetsWon, setsLost: match.awaySetsWon, pointsWon: pointsWon, pointsLost: pointsLost))
+		standings.append(Standings(bestOf: bestOf, name: match.homeTeamName, matchesWon: matchesWon, matchesWonInTieBreak: tieBreakWin, matchesLost: matchesLost, matchesLostInTieBreak: tieBreakLoss, setsWon: match.homeSetsWon, setsLost: match.awaySetsWon, pointsWon: pointsWon, pointsLost: pointsLost))
 		
 		// Away Team
 		matchesWon = match.homeTeamWon ? 0 : 1
@@ -134,7 +137,7 @@ func standings(for global: GlobalVariables) -> [Stats] {
 		pointsWon = match.matchSets.reduce(0) { $0 + $1.awayScore }
 		pointsLost = match.matchSets.reduce(0) { $0 + $1.homeScore }
 		
-		standings.append(Stats(bestOf: bestOf, name: match.awayTeamName, matchesWon: matchesWon, matchesWonInTieBreak: tieBreakWin, matchesLost: matchesLost, matchesLostInTieBreak: tieBreakLoss, setsWon: match.awaySetsWon, setsLost: match.homeSetsWon, pointsWon: pointsWon, pointsLost: pointsLost))
+		standings.append(Standings(bestOf: bestOf, name: match.awayTeamName, matchesWon: matchesWon, matchesWonInTieBreak: tieBreakWin, matchesLost: matchesLost, matchesLostInTieBreak: tieBreakLoss, setsWon: match.awaySetsWon, setsLost: match.homeSetsWon, pointsWon: pointsWon, pointsLost: pointsLost))
 	}
 	
 	return standings.sorted(by: { ($0.standingsPoints, $0.matchesWon) > ($1.standingsPoints, $1.matchesWon) })

@@ -9,9 +9,25 @@ import SwiftUI
 
 struct FilterView: View {
 	@Binding var global: GlobalVariables
+	var matchesCount: Int
 	
 	var body: some View {
 		Group {
+			HStack(alignment: .top) {
+				Image("svrge-logo")
+					.resizable()
+					.scaledToFit()
+					.frame(height: 80)
+					.padding(.leading)
+				Spacer()
+				VStack(alignment: .trailing) {
+					Text ("Ver: \(Bundle.main.cleanReleaseVersion)")
+					Text ("\(matchesCount) matches")
+				}
+				.padding(.horizontal)
+				.font(.caption)
+			}
+			
 			Picker ("Gender", selection: $global.category) {
 				ForEach(Categories.allCases) {
 					Text ($0.id).tag($0)
@@ -56,6 +72,6 @@ struct FilterView: View {
 
 struct FilterView_Previews: PreviewProvider {
 	static var previews: some View {
-		FilterView(global: .constant(GlobalVariables()))
+		FilterView(global: .constant(GlobalVariables()), matchesCount: 5)
 	}
 }

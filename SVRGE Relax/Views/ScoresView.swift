@@ -9,46 +9,45 @@ import SwiftUI
 
 struct ScoresView: View {
 	@Binding var global: GlobalVariables
-	
+
 	var body: some View {
-		VStack {
-			FilterView(global: $global)
-			
-			Text ("\(filteredMatches(for: global).filter { $0.matchComplete()}.count) matches")
-			
-			List {
-				ForEach(filteredMatches(for: global)) { matchResult in
-					VStack (alignment: .leading) {
-						Text(matchResult.date.toString(withFormat: "dd MMM"))
-							.foregroundColor(.red)
-							.padding(.top)
-						
-						HStack {
-							VStack(alignment: .leading) {
-								Text (matchResult.homeTeamName)
-									.bold(matchResult.homeTeamWon)
-								Text (matchResult.awayTeamName)
-									.bold(!matchResult.homeTeamWon)
+		NavigationView {
+			VStack {
+				FilterView(global: $global, matchesCount: completedMatches(for: global).count)
+				
+				List {
+					ForEach(completedMatches(for: global)) { matchResult in
+						VStack (alignment: .leading) {
+							Text(matchResult.date.toString(withFormat: "dd MMM"))
+								.foregroundColor(.red)
+								.padding(.top)
+							
+							HStack {
+								VStack(alignment: .leading) {
+									Text (matchResult.homeTeamName)
+										.bold(matchResult.homeTeamWon)
+									Text (matchResult.awayTeamName)
+										.bold(!matchResult.homeTeamWon)
+								}
+								
+								Spacer()
+								
+								SetsView(matchSets: matchResult.matchSets)
+								
+								VStack {
+									Text ("\(matchResult.homeSetsWon)")
+										.bold(matchResult.homeTeamWon)
+									Text ("\(matchResult.awaySetsWon)")
+										.bold(!matchResult.homeTeamWon)
+								}
+								.frame(width: 30)
+								
 							}
-							
-							Spacer()
-							
-							SetsView(matchSets: matchResult.matchSets)
-							
-							VStack {
-								Text ("\(matchResult.homeSetsWon)")
-									.bold(matchResult.homeTeamWon)
-								Text ("\(matchResult.awaySetsWon)")
-									.bold(!matchResult.homeTeamWon)
-							}
-							.frame(width: 30)
-							
 						}
 					}
 				}
 			}
 		}
-		.navigationTitle ("Scores")
 	}
 }
 
