@@ -16,6 +16,7 @@ struct SVRGE_RelaxApp: App {
     var body: some Scene {
         WindowGroup {
             MainView()
+				.environmentObject(ScheduleViewModel())
         }
     }
 }

@@ -7,73 +7,60 @@
 
 import SwiftUI
 
-extension HorizontalAlignment {
-	enum GP: AlignmentID {
-		static func defaultValue(in context: ViewDimensions) -> CGFloat {
-			context[.trailing]
-		}
-	}
-	
-	static let gp = HorizontalAlignment(GP.self)
-}
-
 struct StandingsView: View {
 	@Binding var global: GlobalVariables
+	@EnvironmentObject var viewModel: ScheduleViewModel
 	
 	var body: some View {
-		NavigationView {
-			VStack {
-				FilterView(global: $global, matchesCount: completedMatches(for: global).count)
-				
-				if (completedMatches(for: global).count > 0) {
-					List {
+		VStack {
+			FilterView(global: $global, matchesCount: viewModel.completedMatches(for: global).count)
+			
+			if (viewModel.completedMatches(for: global).count > 0) {
+				List {
+					HStack {
+						Text ("#")
+							.frame(width: 20)
+						Text ("Team")
+						Spacer ()
 						Group {
-							HStack {
-								Text ("#")
-									.frame(width: 20)
-								Text ("Team")
-								Spacer ()
-								Group {
-									Text ("GP")
-									Text ("Pts")
-									Text ("W")
-									Text ("L")
-								}
-							}
+							Text ("GP")
+							Text ("Pts")
+							Text ("W")
+							Text ("L")
 						}
-						.fontWeight(.bold)
-						
-						ForEach(selectedStandings().enumerated().map {$0}, id: \.element.name) { i, standings in
-							HStack {
-								Text ("\(i+1)").alignmentGuide(.gp) { d in d[HorizontalAlignment.trailing] }
-									.frame(width: 20)
-								Text (standings.name)
-								Spacer()
-								Group {
-									Text ("\(standings.totalMatches)")
-									Text ("\(standings.standingsPoints)")
-									Text ("\(standings.matchesWon)")
-									Text ("\(standings.matchesLost)")
-								}
-								.alignmentGuide(.gp) { d in d[HorizontalAlignment.trailing] }
-								.font(.caption)
-								.frame(width: 20)
-							}
-						}
-						.listStyle(.plain)
 					}
-				} else {
-					Spacer()
-					Text ("Data unavailable")
-					Spacer()
+					.fontWeight(.bold)
+					
+					ForEach(selectedStandings().enumerated().map {$0}, id: \.element.name) { i, standings in
+						HStack {
+							Text ("\(i+1)").alignmentGuide(.gp) { d in d[HorizontalAlignment.trailing] }
+								.frame(width: 20)
+							Text (standings.name)
+								.font(.subheadline)
+							Spacer()
+							Group {
+								Text ("\(standings.totalMatches)")
+								Text ("\(standings.standingsPoints)")
+								Text ("\(standings.matchesWon)")
+								Text ("\(standings.matchesLost)")
+							}
+							.alignmentGuide(.gp) { d in d[HorizontalAlignment.trailing] }
+							.font(.caption2)
+							.frame(width: 25)
+						}
+					}
+					.listStyle(.plain)
 				}
+			} else {
+				Spacer()
+				Text ("Data unavailable")
+				Spacer()
 			}
-			.onAppear { global.foobar() }
 		}
 	}
 	
 	func selectedStandings() -> [Standings] {
-		let standings = standings(for: global)
+		let standings = viewModel.standings(for: global)
 		
 		var mergedStandings = [String: Standings]()
 		
@@ -95,7 +82,19 @@ struct StandingsView: View {
 }
 
 struct StandingsView_Previews: PreviewProvider {
-    static var previews: some View {
+	static var previews: some View {
 		StandingsView(global: .constant(GlobalVariables()))
-    }
+			.environmentObject(ScheduleViewModel())
+	}
 }
+
+extension HorizontalAlignment {
+	enum GP: AlignmentID {
+		static func defaultValue(in context: ViewDimensions) -> CGFloat {
+			context[.trailing]
+		}
+	}
+	
+	static let gp = HorizontalAlignment(GP.self)
+}
+

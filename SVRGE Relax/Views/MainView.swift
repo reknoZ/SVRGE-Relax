@@ -13,8 +13,9 @@ let relaxScoresURLString = "https://www.svrge.org/Resu_new.php"
 
 struct MainView: View {
 	@State var global = GlobalVariables()
+	@EnvironmentObject var viewModel: ScheduleViewModel
 	
-    var body: some View {
+	var body: some View {
 		TabView {
 			ScheduleView(global: $global)
 				.tabItem {
@@ -35,7 +36,7 @@ struct MainView: View {
 			await fetchSchedule()
 			await updateWithScores()
 		}
-    }
+	}
 	
 	func fetchSchedule() async {
 		guard let requestURL = URL(string: relaxScheduleURLString) else { fatalError("Incorrect URL") }
@@ -62,7 +63,7 @@ struct MainView: View {
 							for row in rows.array() {
 								
 								let columns = try row.select("td")
-								if columns.count == 6 { // VALIDATION 1: the data has the right number of columns
+								if columns.count == 6 { // VALIDATION 1
 									let matchNumber = try columns[0].text()
 									
 									let homeTeam = try columns[1].text()
@@ -79,7 +80,7 @@ struct MainView: View {
 										]
 										
 										var dateStringElements = dateString.components(separatedBy: "-")
-										if dateStringElements[0] != "00" { // VALIDATION 3: date is filled in
+										if dateStringElements[0] != "00" { // VALIDATION 3
 											if let month = monthDictionary[dateStringElements[1]] { // VALIDATION 4: array conversion successful
 												dateStringElements[1] = month
 												dateString = dateStringElements.joined(separator: ".")
@@ -109,7 +110,9 @@ struct MainView: View {
 													
 													let scheduledMatch = MatchInfo(season: "2022-2023", date: dateTime, location: address, category: category, division: division, matchNumber: matchNumber, homeTeamName: homeTeam, awayTeamName: awayTeam)
 													
-													allMatches.append(scheduledMatch)
+													DispatchQueue.main.async {
+														viewModel.allMatches.append(scheduledMatch)
+													}
 												}
 											}
 										}
@@ -126,17 +129,16 @@ struct MainView: View {
 		}
 	}
 	
+	@MainActor
 	func updateWithScores() async {
-		let url = URL(string: relaxScoresURLString)
-		guard let requestURL = url else { fatalError("Incorrect URL") }
+		guard let requestURL = URL(string: relaxScoresURLString) else { fatalError("Incorrect URL") }
+		var request = URLRequest(url: requestURL)
+		request.httpMethod = "POST"
 		
 		for division in Divisions.allCases {
-			var request = URLRequest(url: requestURL)
-			request.httpMethod = "POST"
 			request.httpBody = "vlili=\(division.id)".data(using: String.Encoding.utf8)
 			
 			let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-				
 				// Check for Error
 				if let error = error {
 					print("Error took place \(error)")
@@ -146,49 +148,31 @@ struct MainView: View {
 				if let data = data, let html = String(data: data, encoding: .utf8) {
 					do {
 						let document = try SwiftSoup.parse(html)
-						let scoresTable = try document.select(".cal_table").first()!
-						
-						let rows = try scoresTable.select("tr")
-						let _ = rows.dropFirst() // the header row is only <tr> not <th>
-						for row in rows.array() {
+						if let scoresTable = try document.select(".cal_table").first() {
 							
-							let columns = try row.select("td")
-							if columns.count == 12 {
-								let matchNumber = try columns[0].text()
+							let rows = try scoresTable.select("tr")
+							let _ = rows.dropFirst() // the header row is only <tr> not <th>
+							
+							for row in rows.array() {
 								
-								let homeTeam = try columns[1].text()
-								let awayTeam = try columns[2].text()
-																
-								let matchSets = try columns[4].text()
-																
-								var setResults: [MatchSet] = []
-								let setScores = matchSets.split(separator: "-")
-								for setScore in setScores {
-									let score = setScore.split(separator: "/")
-									let homeScore = Int(score[0]) ?? -1
-									let awayScore = Int(score[1]) ?? -1
-									setResults.append(MatchSet(homeScore: homeScore, awayScore: awayScore))
-								}
-								
-								var category = Categories.womens
-								switch division {
-									case .fa, .fb, .fc: category = .womens
-									case .ha, .hb, .hc, .hd: category = .mens
-									case .xa, .xb, .xc, .xd: category = .mixed
-								}
-								
-								let matchResult = MatchInfo(
-									season: "2022-2023",
-									location: "address missing",
-									league: .relax, category: category, division: division, matchNumber: matchNumber,
-									homeTeamName: homeTeam, awayTeamName: awayTeam,
-									matchSets: setResults)
-								
-								if let oldMatchIndex = allMatches.firstIndex(where: {$0.matchNumber == matchResult.matchNumber}) {
-									allMatches[oldMatchIndex].matchSets = matchResult.matchSets
-								} else {
-									if matchResult.homeTeamName != "Domicile" {
-										print ("ERROR: Match \(matchResult.matchNumber) has results but it's not found on the schedule.")
+								let columns = try row.select("td")
+								if columns.count == 12 { // VALIDATION 1
+									let matchNumber = try columns[0].text()
+									
+									let matchSets = try columns[4].text()
+
+									var setResults: [MatchSet] = []
+									let setScores = matchSets.split(separator: "-")
+									for setScore in setScores {
+										let score = setScore.split(separator: "/")
+										let homeScore = Int(score[0]) ?? -1
+										let awayScore = Int(score[1]) ?? -1
+										setResults.append(MatchSet(homeScore: homeScore, awayScore: awayScore))
+									}
+									let finalSetResults = setResults
+																		
+									DispatchQueue.main.async {
+										viewModel.update(matchNumber, with: finalSetResults)
 									}
 								}
 							}
@@ -204,7 +188,7 @@ struct MainView: View {
 }
 
 struct MainView_Previews: PreviewProvider {
-    static var previews: some View {
-        MainView()
-    }
+	static var previews: some View {
+		MainView()
+	}
 }

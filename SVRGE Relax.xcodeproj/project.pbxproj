@@ -33,7 +33,7 @@
 		88341A9229A8B4C4007CA72B /* SVRGE-Relax-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "SVRGE-Relax-Info.plist"; sourceTree = SOURCE_ROOT; };
 		88341A9329A8B503007CA72B /* FilterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterView.swift; sourceTree = "<group>"; };
 		88341A9529A91E47007CA72B /* ScheduleRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleRow.swift; sourceTree = "<group>"; };
-		884CD72629BE805200CBD132 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ScheduleViewModel.swift; path = "SVRGE Relax/ViewModels/ScheduleViewModel.swift"; sourceTree = SOURCE_ROOT; };
+		884CD72629BE805200CBD132 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ScheduleViewModel.swift; path = "SVRGE Relax/ScheduleViewModel.swift"; sourceTree = SOURCE_ROOT; };
 		8866E2E529B24C570078276A /* StandingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StandingsView.swift; sourceTree = "<group>"; };
 		8876F9DC29ABD67100C433DE /* GlobalVariables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalVariables.swift; sourceTree = "<group>"; };
 		8876F9DE29ABD69600C433DE /* MatchSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchSet.swift; sourceTree = "<group>"; };
@@ -61,7 +61,6 @@
 			isa = PBXGroup;
 			children = (
 				88341A8429A7CDD6007CA72B /* MatchInfo.swift */,
-				884CD72629BE805200CBD132 /* ScheduleViewModel.swift */,
 				8876F9DE29ABD69600C433DE /* MatchSet.swift */,
 				8876F9DC29ABD67100C433DE /* GlobalVariables.swift */,
 				8876F9E429AE4A4400C433DE /* Standings.swift */,
@@ -73,9 +72,9 @@
 			isa = PBXGroup;
 			children = (
 				88341A8C29A80829007CA72B /* MainView.swift */,
-				88A9F545291D28170088ECB4 /* ScoresView.swift */,
 				88341A8829A804E6007CA72B /* ScheduleView.swift */,
 				88341A9529A91E47007CA72B /* ScheduleRow.swift */,
+				88A9F545291D28170088ECB4 /* ScoresView.swift */,
 				8866E2E529B24C570078276A /* StandingsView.swift */,
 				88341A9329A8B503007CA72B /* FilterView.swift */,
 			);
@@ -102,8 +101,9 @@
 			isa = PBXGroup;
 			children = (
 				88A9F543291D28170088ECB4 /* SVRGE_RelaxApp.swift */,
-				88341A8A29A8056E007CA72B /* Models */,
 				88341A8B29A80811007CA72B /* Views */,
+				88341A8A29A8056E007CA72B /* Models */,
+				884CD72629BE805200CBD132 /* ScheduleViewModel.swift */,
 				88341A9029A816B9007CA72B /* Extensions.swift */,
 				88A9F547291D281B0088ECB4 /* Assets.xcassets */,
 				88341A9229A8B4C4007CA72B /* SVRGE-Relax-Info.plist */,
