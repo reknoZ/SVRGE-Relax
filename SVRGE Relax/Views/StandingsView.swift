@@ -51,6 +51,7 @@ struct StandingsView: View {
 					}
 					.listStyle(.plain)
 				}
+				.listStyle(.plain)
 			} else {
 				Spacer()
 				Text ("Data unavailable")

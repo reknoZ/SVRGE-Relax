@@ -56,12 +56,13 @@ struct MatchInfo: Identifiable, Comparable {
 	var id: String { "\(season)-\(matchNumber)" }
 	
 	var season = ""							// "2022-2023"
+	var matchNumber: String					// 31014
 	var date: Date = Date()					// date and time
+
 	var location = ""						// name of venue, plus address
 	var league = Leagues.relax				// Relax
 	var category = Categories.womens		// Womens
 	var division = Divisions.fa				// FA
-	var matchNumber: String					// 31014
 	
 	var homeTeamName = ""					// OMM - 2
 	var awayTeamName = ""					// P.V.I.

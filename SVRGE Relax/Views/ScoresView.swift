@@ -47,6 +47,7 @@ struct ScoresView: View {
 					}
 				}
 			}
+			.listStyle(.plain)
 		}
 	}
 }

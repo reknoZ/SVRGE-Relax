@@ -108,7 +108,7 @@ struct MainView: View {
 														case .xa, .xb, .xc, .xd: category = .mixed
 													}
 													
-													let scheduledMatch = MatchInfo(season: "2022-2023", date: dateTime, location: address, category: category, division: division, matchNumber: matchNumber, homeTeamName: homeTeam, awayTeamName: awayTeam)
+													let scheduledMatch = MatchInfo(season: "2022-2023", matchNumber: matchNumber, date: dateTime, location: address, category: category, division: division, homeTeamName: homeTeam, awayTeamName: awayTeam)
 													
 													DispatchQueue.main.async {
 														viewModel.allMatches.append(scheduledMatch)

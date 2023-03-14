@@ -12,21 +12,17 @@ struct FilterView: View {
 	var matchesCount: Int
 	
 	var body: some View {
-		Group {
+		VStack {
 			HStack(alignment: .top) {
-				Image("svrge-logo")
-					.resizable()
-					.scaledToFit()
-					.frame(height: 80)
-					.padding(.leading)
+				Text ("Ver: \(Bundle.main.cleanReleaseVersion)")
 				Spacer()
-				VStack(alignment: .trailing) {
-					Text ("Ver: \(Bundle.main.cleanReleaseVersion)")
-					Text ("\(matchesCount) matches")
-				}
-				.padding(.horizontal)
-				.font(.caption)
+				Text ("SVRGe Relax")
+				Spacer()
+				Text ("\(matchesCount) matches")
+				
 			}
+			.padding(.horizontal)
+			.font(.caption)
 			
 			Picker ("Gender", selection: $global.category) {
 				ForEach(Categories.allCases) {
@@ -43,7 +39,7 @@ struct FilterView: View {
 						Text ("FC").tag(Divisions.fc)
 					}
 					.pickerStyle(SegmentedPickerStyle())
-
+					
 				case .mens:
 					Picker ("Men's Leagues", selection: $global.division) {
 						Text ("HA").tag(Divisions.ha)
@@ -52,7 +48,7 @@ struct FilterView: View {
 						Text ("HD").tag(Divisions.hd)
 					}
 					.pickerStyle(SegmentedPickerStyle())
-
+					
 				case .mixed:
 					Picker ("Mixed Leagues", selection: $global.division) {
 						Text ("XA").tag(Divisions.xa)
@@ -61,7 +57,7 @@ struct FilterView: View {
 						Text ("XD").tag(Divisions.xd)
 					}
 					.pickerStyle(SegmentedPickerStyle())
-
+					
 			}
 		}
 		.padding(.horizontal)
